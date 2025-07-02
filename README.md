@@ -69,5 +69,3 @@ A full-stack application for appointment booking and service management.
 - Security is disabled for development.
 - The frontend will be developed with Angular and will consume the backend API.
 
-## License
-MIT License
