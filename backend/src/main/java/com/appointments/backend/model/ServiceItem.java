@@ -17,5 +17,4 @@ public class ServiceItem {
     private Double price;
     private Integer durationInMinutes;
     private Boolean active = true;
-    
 }

@@ -13,6 +13,7 @@ public class WebSecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity, not recommended for production
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/users/**").permitAll() // Permitir explícitamente endpoints de usuarios
                 .anyRequest().permitAll() // Allow all requests for simplicity
             );
 
