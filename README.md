@@ -1,4 +1,4 @@
-# BookingApp
+# Appointly
 
 A full-stack application for appointment booking and service management.
 
