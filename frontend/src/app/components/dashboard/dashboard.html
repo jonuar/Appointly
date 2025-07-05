@@ -1,1 +1,13 @@
-<p>dashboard works!</p>
+<h2>Servicios disponibles</h2>
+<ul>
+    <li *ngFor="let service of services">
+        {{ service.name }} - ${{ service.price }} - {{  service.durationInMinutes }} min
+    </li>
+</ul>
+
+<h2>Reservas hechas</h2>
+<ul>
+    <li *ngFor="let res of reservations">
+        Servicio: {{  res.reservationDateTime }} - Estado: {{  res.status }}
+    </li>
+</ul>
