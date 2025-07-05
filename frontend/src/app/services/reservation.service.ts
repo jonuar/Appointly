@@ -33,7 +33,7 @@ export class ReservationService {
         return this.http.get<ServiceItem[]>(`${this.apiUrl}/services`);
     }
 
-    getreservations(): Observable<Reservation[]> {
+    getReservations(): Observable<Reservation[]> {
         return this.http.get<Reservation[]>(`${this.apiUrl}/reservations`);
     }
 
