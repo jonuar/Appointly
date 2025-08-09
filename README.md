@@ -1,4 +1,4 @@
-# Appointly (WORK IN PROGRESS)
+# Appointly (WIP)
 
 A full-stack application for appointment booking and service management.
 
@@ -8,6 +8,7 @@ A full-stack application for appointment booking and service management.
 - `frontend/` — (planned) Angular application for user interface
 
 ## Features
+
 - User registration and management
 - Service catalog and management
 - Reservation creation and management
@@ -47,6 +48,7 @@ A full-stack application for appointment booking and service management.
    The app will be available at `http://localhost:4200`.
 
 ## Main API Endpoints
+
 - `GET /api/users` — List users
 - `POST /api/users` — Create user
 - `GET /api/services` — List services
