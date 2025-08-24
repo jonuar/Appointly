@@ -1,4 +1,4 @@
-# Appointly (WORK IN PROGRESS)
+# Appointly (WIP)
 
 A full-stack application for appointment booking and service management.
 
