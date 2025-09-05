@@ -15,7 +15,7 @@ export interface Reservation {
     id?: number;
     user: { id: number};
     service: ServiceItem;
-    reservationDatetime: string;
+    reservationDateTime: string;
     status?: string;
     notes?: string;
 }
