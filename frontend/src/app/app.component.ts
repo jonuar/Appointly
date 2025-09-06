@@ -5,18 +5,9 @@ import { RouterOutlet } from '@angular/router';
     selector: 'app-root',
     standalone: true,
     imports: [RouterOutlet],
-    template: `
-    <div class="app-container">
-      <header>
-        <h1>Appointly</h1>
-      </header>
-      <main>
-        <router-outlet></router-outlet>
-      </main>
-    </div>
-  `,
+    templateUrl: './app.html',
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-    title = 'frontend';
+    title = 'Sistema de Reservas';
 }
