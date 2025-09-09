@@ -15,7 +15,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
     
-    private static final String SECRET_KEY = "7A3F6C4D2B5E7D396A6B4F2C3D1A8E7F5C2D3B6A9F0E1D7C8B6A4F3E2D1C0B9A";
+    private static final String SECRET_KEY = "supersecretkeyforsigningjwttokens12345"; // Debe ser al menos 256 bits para HS256
     
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
