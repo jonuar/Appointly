@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Reservation {
 
     @Id
@@ -24,8 +25,24 @@ public class Reservation {
 
     private LocalDateTime reservationDateTime;
 
-    private String status = "PENDING"; // Default status is PENDING
-
-    private String notes; // Optional notes for the reservation
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private ReservationStatus status = ReservationStatus.PENDING;
     
+    private String notes;
+    
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
