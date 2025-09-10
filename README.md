@@ -14,6 +14,7 @@ A full-stack application for appointment booking and service management.
 - Reservation creation and management
 - RESTful API (Spring Boot)
 - In-memory H2 database for development
+- User Roles and Authentication using JWT
 - (Planned) Responsive Angular frontend
 
 ## Requirements
