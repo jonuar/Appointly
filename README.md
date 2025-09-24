@@ -6,7 +6,6 @@ A full-stack application for appointment booking and service management.
 - `frontend/` — (planned) Angular application for user interface
 
 ## Features
-
 - User registration and management
 - Service catalog and management
 - Reservation creation and management
