@@ -1,5 +1,4 @@
 # Appointly (Work in progress)
-
 A full-stack application for appointment booking and service management.
 
 ## Project Structure
