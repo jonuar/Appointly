@@ -1,24 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ── Design Tokens ─────────────────────────────────── */
+/* ── Neobrutalism Design Tokens ─────────────────────── */
 :root {
-  --color-bg:         #0d1117;
-  --color-surface:    #161b22;
-  --color-surface-2:  #1f2937;
-  --color-border:     #30363d;
-  --color-primary:    #6366f1;
-  --color-primary-h:  #818cf8;
-  --color-accent:     #a78bfa;
-  --color-text:       #e6edf3;
-  --color-muted:      #8b949e;
-  --color-error:      #f87171;
-  --color-error-bg:   rgba(248,113,113,0.1);
-  --color-success:    #34d399;
-  --radius-sm:        6px;
-  --radius-md:        12px;
-  --radius-lg:        20px;
-  --shadow-card:      0 8px 32px rgba(0,0,0,0.4);
-  --transition:       all 0.2s ease;
+  --color-bg:         #f0f0f0;
+  --color-surface:    #ffffff;
+  --color-surface-2:  #e0e0e0;
+  --color-border:     #000000;
+  --color-primary:    #ffde59; /* Cyber Yellow */
+  --color-primary-h:  #ffbd59;
+  --color-accent:     #ff5757; /* Bright Red */
+  --color-text:       #000000;
+  --color-muted:      #333333;
+  --color-error:      #ff3131;
+  --color-success:    #00bf63;
+  --radius-sm:        0px; /* Neobrutalism often uses sharp or very slight rounding */
+  --radius-md:        4px;
+  --radius-lg:        8px;
+  
+  /* The characteristic Neobrutalism "Hard Shadow" */
+  --shadow-neo:       4px 4px 0px #000000;
+  --shadow-neo-lg:    8px 8px 0px #000000;
+  --transition:       all 0.15s cubic-bezier(0, 0, 0, 1);
 }
 
 /* ── Reset & Base ──────────────────────────────────── */
@@ -35,10 +37,12 @@ html, body {
 }
 
 a {
-  color: var(--color-primary-h);
-  text-decoration: none;
+  color: #000;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  font-weight: 700;
   transition: var(--transition);
-  &:hover { color: var(--color-accent); text-decoration: underline; }
+  &:hover { background-color: var(--color-primary); color: #000; text-decoration: none; }
 }
 
 /* ── Auth Layout (shared by Login & Register) ─────── */
@@ -58,11 +62,11 @@ a {
   width: 100%;
   max-width: 440px;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border: 3px solid var(--color-border);
+  border-radius: var(--radius-sm);
   padding: 40px 36px;
-  box-shadow: var(--shadow-card);
-  animation: fadeUp 0.4s ease;
+  box-shadow: var(--shadow-neo-lg);
+  animation: fadeUp 0.3s ease-out;
 }
 
 .auth-header {
@@ -115,26 +119,27 @@ a {
 
   input {
     width: 100%;
-    padding: 11px 14px;
-    background: var(--color-surface-2);
-    border: 1px solid var(--color-border);
+    padding: 12px 14px;
+    background: #fff;
+    border: 3px solid var(--color-border);
     border-radius: var(--radius-sm);
-    color: var(--color-text);
-    font-size: 0.95rem;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 600;
     font-family: 'Inter', sans-serif;
     transition: var(--transition);
     outline: none;
 
-    &::placeholder { color: #4b5563; }
+    &::placeholder { color: #888; }
 
     &:focus {
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+      background: var(--color-primary);
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0px #000;
     }
 
     &.input-error {
-      border-color: var(--color-error);
-      &:focus { box-shadow: 0 0 0 3px rgba(248,113,113,0.2); }
+      background: #ffcccc;
     }
   }
 }
@@ -156,13 +161,14 @@ a {
 /* ── Buttons ──────────────────────────────────────── */
 .btn-primary {
   width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  border: none;
+  padding: 14px;
+  background: var(--color-primary);
+  border: 3px solid #000;
   border-radius: var(--radius-sm);
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 600;
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: var(--transition);
@@ -170,19 +176,22 @@ a {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 4px;
+  box-shadow: var(--shadow-neo);
 
   &:hover:not(:disabled) {
-    filter: brightness(1.12);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #000;
   }
 
-  &:active:not(:disabled) { transform: translateY(0); }
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
 
   &:disabled {
-    opacity: 0.6;
+    background: #ccc;
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
