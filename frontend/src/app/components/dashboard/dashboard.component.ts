@@ -4,6 +4,7 @@ import { ReservationService, ServiceItem, Reservation } from '../../services/res
 import { AuthService } from '../../services/auth.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,12 +21,12 @@ export class DashboardComponent implements OnInit {
   currentUser: any;
   showModal = false;
   selectedService: ServiceItem | null = null;
-  isLoading = false;
 
   constructor(
     private reservationService: ReservationService,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -56,7 +57,6 @@ export class DashboardComponent implements OnInit {
   async onSubmit(): Promise<void> {
     if (this.reservationForm.invalid) return;
 
-    this.isLoading = true;
     const form = this.reservationForm.value;
 
     const newReservation = {
@@ -68,12 +68,11 @@ export class DashboardComponent implements OnInit {
 
     try {
       await firstValueFrom(this.reservationService.createReservation(newReservation));
+      this.notificationService.success('¡Reserva creada con éxito!');
       await this.loadReservations();
       this.closeModal();
     } catch (error) {
-      console.error('Error creating reservation:', error);
-    } finally {
-      this.isLoading = false;
+      // Handled globally, but we can do extra logic here if needed.
     }
   }
 
@@ -89,10 +88,10 @@ export class DashboardComponent implements OnInit {
     if (confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
       try {
         await firstValueFrom(this.reservationService.cancelReservation(id));
+        this.notificationService.info('Reserva cancelada.');
         await this.loadReservations();
       } catch (error) {
-        console.error('Error cancelling reservation:', error);
-        alert('No se pudo cancelar la reserva. Intenta de nuevo.');
+        // Handled globally
       }
     }
   }

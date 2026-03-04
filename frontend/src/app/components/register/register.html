@@ -54,16 +54,8 @@
                 }
             </div>
 
-            @if (errorMessage) {
-            <div class="alert-error">{{ errorMessage }}</div>
-            }
-
-            <button id="register-submit" type="submit" class="btn-primary" [disabled]="isLoading">
-                @if (isLoading) {
-                <span class="spinner"></span> Creando cuenta...
-                } @else {
+            <button id="register-submit" type="submit" class="btn-primary" [disabled]="registerForm.invalid">
                 Crear cuenta
-                }
             </button>
 
         </form>

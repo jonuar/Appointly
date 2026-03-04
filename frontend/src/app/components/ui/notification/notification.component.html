@@ -1,0 +1,16 @@
+<div class="notification-container" *ngIf="notificationService.notification$ | async as notification">
+    <div class="notification-card" [ngClass]="getTypeClass(notification.type)">
+        <div class="notification-icon">
+            <span *ngIf="notification.type === 'success'">✅</span>
+            <span *ngIf="notification.type === 'error'">❌</span>
+            <span *ngIf="notification.type === 'warning'">⚠️</span>
+            <span *ngIf="notification.type === 'info'">ℹ️</span>
+        </div>
+        <div class="notification-content">
+            {{ notification.message }}
+        </div>
+        <button class="notification-close" (click)="notificationService.clear()">
+            &times;
+        </button>
+    </div>
+</div>

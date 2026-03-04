@@ -92,8 +92,8 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary" [disabled]="reservationForm.invalid || isLoading">
-                        {{ isLoading ? 'Procesando...' : 'Confirmar Reserva' }}
+                    <button type="submit" class="btn-primary" [disabled]="reservationForm.invalid">
+                        Confirmar Reserva
                     </button>
                 </div>
             </form>

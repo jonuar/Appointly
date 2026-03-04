@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractContro
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
   const password = group.get('password')?.value;
@@ -19,13 +20,12 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-  errorMessage = '';
-  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -38,20 +38,12 @@ export class RegisterComponent {
   onSubmit(): void {
     if (this.registerForm.invalid) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
-
     this.authService.register(this.registerForm.value).subscribe({
       next: () => {
-        this.isLoading = false;
+        this.notificationService.success('¡Registro exitoso! Bienvenido.');
         this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.status === 409
-          ? 'Este correo ya está registrado.'
-          : 'Error al registrar. Por favor intenta de nuevo.';
       }
+      // Error is handled globally by ErrorInterceptor
     });
   }
 }

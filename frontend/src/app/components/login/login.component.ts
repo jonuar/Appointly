@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -13,13 +14,12 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  errorMessage = '';
-  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {
     // Si ya está logueado, redirigir al dashboard
     if (this.authService.isLoggedIn()) {
@@ -34,20 +34,12 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.invalid) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
-
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        this.isLoading = false;
+        this.notificationService.success('¡Bienvenido de nuevo!');
         this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.status === 403 || err.status === 401
-          ? 'Correo o contraseña incorrectos.'
-          : 'Error al conectar con el servidor. Intenta de nuevo.';
       }
+      // Error is handled globally by ErrorInterceptor
     });
   }
 }
