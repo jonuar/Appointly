@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReservationService, ServiceItem, Reservation } from '../../services/reservation.service'
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-
 
 @Component({
   selector: 'app-dashboard',
@@ -12,42 +12,56 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
-
 export class DashboardComponent implements OnInit {
 
   services: ServiceItem[] = [];
   reservations: Reservation[] = [];
-  reservationForm!: FormGroup
+  reservationForm!: FormGroup;
+  currentUser: any;
+  showModal = false;
+  selectedService: ServiceItem | null = null;
+  isLoading = false;
 
-  constructor(private reservationService: ReservationService,
-              private fb: FormBuilder
-  ) {}
+  constructor(
+    private reservationService: ReservationService,
+    private authService: AuthService,
+    private fb: FormBuilder
+  ) { }
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser();
     this.loadServices();
     this.loadReservations();
 
     this.reservationForm = this.fb.group({
-      userId: [1], // Default user ID, can be changed later
-      serviceId: [null], // Service ID will be set when a service is selected
-      reservationDateTime: [null], // Date and time will be set when a reservation is made
+      userId: [this.currentUser?.userId],
+      serviceId: [null, Validators.required],
+      reservationDateTime: [null, Validators.required],
       notes: ['']
     });
   }
 
+  openBookingModal(service: ServiceItem): void {
+    this.selectedService = service;
+    this.reservationForm.patchValue({ serviceId: service.id });
+    this.showModal = true;
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+    this.selectedService = null;
+    this.reservationForm.reset({ userId: this.currentUser?.userId });
+  }
+
   async onSubmit(): Promise<void> {
+    if (this.reservationForm.invalid) return;
+
+    this.isLoading = true;
     const form = this.reservationForm.value;
-
-    const selectedService = this.services.find(service => service.id === form.serviceId);
-    if (!selectedService) {
-      console.log('Servicio no encontrado');
-      return;
-    }
-
 
     const newReservation = {
       user: { id: form.userId },
-      service: selectedService,
+      service: this.selectedService!,
       reservationDateTime: form.reservationDateTime,
       notes: form.notes
     };
@@ -55,9 +69,11 @@ export class DashboardComponent implements OnInit {
     try {
       await firstValueFrom(this.reservationService.createReservation(newReservation));
       await this.loadReservations();
-      this.reservationForm.reset({ userId: 1 });
+      this.closeModal();
     } catch (error) {
       console.error('Error creating reservation:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -66,6 +82,23 @@ export class DashboardComponent implements OnInit {
   }
 
   async loadReservations(): Promise<void> {
-    this.reservations = await firstValueFrom(this.reservationService.getReservations());
+    this.reservations = await firstValueFrom(this.reservationService.getMyReservations());
+  }
+
+  async deleteReservation(id: number): Promise<void> {
+    if (confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
+      try {
+        await firstValueFrom(this.reservationService.cancelReservation(id));
+        await this.loadReservations();
+      } catch (error) {
+        console.error('Error cancelling reservation:', error);
+        alert('No se pudo cancelar la reserva. Intenta de nuevo.');
+      }
+    }
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }
+

@@ -13,7 +13,7 @@ export interface ServiceItem {
 
 export interface Reservation {
     id?: number;
-    user: { id: number};
+    user: { id: number };
     service: ServiceItem;
     reservationDateTime: string;
     status?: string;
@@ -26,19 +26,23 @@ export interface Reservation {
 export class ReservationService {
 
     private apiUrl = 'http://localhost:8080/api';
-    
-    constructor(private http: HttpClient) {}
+
+    constructor(private http: HttpClient) { }
 
     getServices(): Observable<ServiceItem[]> {
         return this.http.get<ServiceItem[]>(`${this.apiUrl}/services`);
     }
 
-    getReservations(): Observable<Reservation[]> {
-        return this.http.get<Reservation[]>(`${this.apiUrl}/reservations`);
+    getMyReservations(): Observable<Reservation[]> {
+        return this.http.get<Reservation[]>(`${this.apiUrl}/reservations/my`);
     }
 
     createReservation(reservation: Reservation): Observable<Reservation> {
         return this.http.post<Reservation>(`${this.apiUrl}/reservations`, reservation);
+    }
+
+    cancelReservation(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/reservations/${id}`);
     }
 
 

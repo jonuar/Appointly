@@ -1,39 +1,102 @@
-<h2>Servicios disponibles</h2>
-<ul>
-    <li *ngFor="let service of services">
-        {{ service.name }} - ${{ service.price }} - {{ service.durationInMinutes }} min
-    </li>
-</ul>
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="brand">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+                    <path
+                        d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
+                </svg>
+                <span>Appointly</span>
+            </div>
+            <div class="user-meta" *ngIf="currentUser">
+                <span>Bienvenido, <strong>{{ currentUser.name }}</strong></span>
+                <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+            </div>
+        </div>
+    </header>
 
-<h2>Reservas hechas</h2>
-<ul>
-    <li *ngFor="let res of reservations">
-        Servicio: {{ res.reservationDateTime }} - Estado: {{ res.status }}
-    </li>
-</ul>
+    <main class="content">
 
+        <!-- Services Grid -->
+        <section class="services-section">
+            <div class="section-header">
+                <h2>Servicios Disponibles</h2>
+                <p>Elige el servicio que prefieras y reserva tu cita.</p>
+            </div>
 
-<h2>Crear nueva reserva</h2>
+            <div class="services-grid">
+                <div class="service-card" *ngFor="let service of services">
+                    <div class="service-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v10l4.5 4.5" />
+                            <circle cx="12" cy="12" r="10" />
+                        </svg>
+                    </div>
+                    <div class="service-info">
+                        <h3>{{ service.name }}</h3>
+                        <p>{{ service.description }}</p>
+                        <div class="service-meta">
+                            <span class="price">${{ service.price }}</span>
+                            <span class="duration">{{ service.durationInMinutes }} min</span>
+                        </div>
+                    </div>
+                    <button class="btn-book" (click)='openBookingModal(service)'>Reservar</button>
+                </div>
+            </div>
+        </section>
 
-<form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
-    <label>Servicio:</label>
-    <select formControlName="serviceId">
-        <option *ngFor="let service of services" [value]="service.id">
-            {{ service.name }} - ${{ service.price }}
-        </option>
-    </select>
+        <!-- My Reservations -->
+        <section class="reservations-section" *ngIf="reservations.length > 0">
+            <div class="section-header">
+                <h2>Mis Reservas</h2>
+            </div>
+            <div class="reservations-list">
+                <div class="reservation-item" *ngFor="let res of reservations">
+                    <div class="res-body">
+                        <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
+                        <span class="res-service">{{ res.service.name }}</span>
+                    </div>
+                    <div class="res-actions">
+                        <span class="res-status" [class]="res.status?.toLowerCase()">{{ res.status }}</span>
+                        <button class="btn-cancel" (click)="deleteReservation(res.id!)" title="Cancelar Reserva">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-    <br>
+    <!-- Booking Modal -->
+    <div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Reservar: {{ selectedService?.name }}</h3>
+                <button class="btn-close" (click)="closeModal()">&times;</button>
+            </div>
 
-    <label>Fecha y hora:</label>
-    <input type="datetime-local" formControlName="reservationDateTime">
+            <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()" class="modal-form">
+                <div class="form-group">
+                    <label>Fecha y Hora</label>
+                    <input type="datetime-local" formControlName="reservationDateTime"
+                        [class.input-error]="reservationForm.get('reservationDateTime')?.invalid && reservationForm.get('reservationDateTime')?.touched">
+                </div>
 
-    <br>
+                <div class="form-group">
+                    <label>Notas adicionales</label>
+                    <textarea formControlName="notes" rows="3"
+                        placeholder="Ej: Alguna preferencia especial..."></textarea>
+                </div>
 
-    <label>Notas:</label>
-    <textarea formControlName="notes" rows="2"></textarea>
-
-    <br>
-
-    <button type="submit">Reservar</button>
-</form>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary" [disabled]="reservationForm.invalid || isLoading">
+                        {{ isLoading ? 'Procesando...' : 'Confirmar Reserva' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

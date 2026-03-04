@@ -47,25 +47,32 @@ A full-stack application for appointment booking and service management.
 
 ## Main API Endpoints
 
-- `GET /api/users` — List users
-- `POST /api/users` — Create user
-- `GET /api/services` — List services
-- `POST /api/services` — Create service
-- `GET /api/reservations` — List reservations
-- `POST /api/reservations` — Create reservation
+- `POST /api/auth/register` — Registrar nuevo usuario
+- `POST /api/auth/login` — Iniciar sesión y obtener JWT
+- `GET /api/services` — Listar servicios (Público)
+- `GET /api/reservations/my` — Ver mis reservas (Requiere JWT)
+- `POST /api/reservations` — Crear reserva (Requiere JWT)
+- `DELETE /api/reservations/{id}` — Cancelar reserva (Requiere JWT)
 
 ## Example Reservation JSON
 ```json
 {
-  "user": { "id": 1 },
   "service": { "id": 2 },
   "reservationDateTime": "2025-07-01T14:00:00",
   "notes": "Please send invoice"
 }
 ```
 
+## Default Credentials (H2 Development)
+Como la base de datos es en memoria, se han pre-cargado los siguientes usuarios para pruebas rápidas:
+
+| Rol | Email | Password |
+| :--- | :--- | :--- |
+| **User** | `test@example.com` | `password123` |
+| **Admin** | `admin@appointly.com` | `admin123` |
+
 ## Development Notes
-- The backend uses an in-memory H2 database that resets on every restart.
-- Security is disabled for development.
-- The frontend will be developed with Angular and will consume the backend API.
+- El backend usa una base de datos H2 en memoria que se reinicia con cada ejecución.
+- La seguridad está habilitada mediante JWT. Casi todos los endpoints de `/api/reservations/**` requieren el token en el header `Authorization: Bearer <token>`.
+- El frontend está desarrollado en Angular y ya integra el interceptor para el manejo de sesiones.
 

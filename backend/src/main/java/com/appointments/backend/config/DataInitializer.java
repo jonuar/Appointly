@@ -1,9 +1,12 @@
 package com.appointments.backend.config;
 
-import com.appointments.backend.model.ServiceItem;
+import com.appointments.backend.model.Role;
+import com.appointments.backend.model.User;
 import com.appointments.backend.repository.ServiceItemRepository;
+import com.appointments.backend.repository.UserRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,13 +15,41 @@ import java.util.List;
 public class DataInitializer implements ApplicationRunner {
 
     private final ServiceItemRepository serviceItemRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(ServiceItemRepository serviceItemRepository) {
+    public DataInitializer(
+            ServiceItemRepository serviceItemRepository,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder) {
         this.serviceItemRepository = serviceItemRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(ApplicationArguments args) {
+        // Inicializar Usuarios de prueba
+        if (userRepository.count() == 0) {
+            User testUser = User.builder()
+                    .name("Usuario Prueba")
+                    .email("test@example.com")
+                    .password(passwordEncoder.encode("password123"))
+                    .role(Role.USER)
+                    .build();
+
+            User adminUser = User.builder()
+                    .name("Administrador")
+                    .email("admin@appointly.com")
+                    .password(passwordEncoder.encode("admin123"))
+                    .role(Role.ADMIN)
+                    .build();
+
+            userRepository.saveAll(List.of(testUser, adminUser));
+            System.out.println("✅ DataInitializer: Usuarios de prueba cargados.");
+        }
+
+        // Inicializar Servicios
         if (serviceItemRepository.count() == 0) {
             List<ServiceItem> services = List.of(
                 new ServiceItem(null, "Corte de cabello", "Corte clásico o moderno con lavado incluido", 25.0, 45, true),
@@ -32,8 +63,6 @@ public class DataInitializer implements ApplicationRunner {
             );
             serviceItemRepository.saveAll(services);
             System.out.println("✅ DataInitializer: " + services.size() + " servicios de ejemplo cargados.");
-        } else {
-            System.out.println("ℹ️  DataInitializer: Ya existen servicios en la base de datos, omitiendo carga inicial.");
         }
     }
 }
