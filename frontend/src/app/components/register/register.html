@@ -1,1 +1,75 @@
-<p>register works!</p>
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+                    <path
+                        d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
+                </svg>
+            </div>
+            <h1>Crea tu cuenta</h1>
+            <p>Empieza a gestionar tus citas en Appointly</p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+
+            <div class="form-group">
+                <label for="reg-name">Nombre completo</label>
+                <input id="reg-name" type="text" formControlName="name" placeholder="Tu nombre"
+                    [class.input-error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+                    autocomplete="name" />
+                @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+                <span class="error-text">El nombre debe tener al menos 2 caracteres.</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="reg-email">Correo electrónico</label>
+                <input id="reg-email" type="email" formControlName="email" placeholder="tu@correo.com"
+                    [class.input-error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+                    autocomplete="email" />
+                @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+                <span class="error-text">Ingresa un correo válido.</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="reg-password">Contraseña</label>
+                <input id="reg-password" type="password" formControlName="password" placeholder="Mínimo 6 caracteres"
+                    [class.input-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                    autocomplete="new-password" />
+                @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+                <span class="error-text">La contraseña debe tener al menos 6 caracteres.</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="reg-confirm">Confirmar contraseña</label>
+                <input id="reg-confirm" type="password" formControlName="confirmPassword"
+                    placeholder="Repite tu contraseña"
+                    [class.input-error]="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched"
+                    autocomplete="new-password" />
+                @if (registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched) {
+                <span class="error-text">Las contraseñas no coinciden.</span>
+                }
+            </div>
+
+            @if (errorMessage) {
+            <div class="alert-error">{{ errorMessage }}</div>
+            }
+
+            <button id="register-submit" type="submit" class="btn-primary" [disabled]="isLoading">
+                @if (isLoading) {
+                <span class="spinner"></span> Creando cuenta...
+                } @else {
+                Crear cuenta
+                }
+            </button>
+
+        </form>
+
+        <div class="auth-footer">
+            <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+        </div>
+    </div>
+</div>
