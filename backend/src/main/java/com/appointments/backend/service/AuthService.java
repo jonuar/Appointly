@@ -20,7 +20,7 @@ public class AuthService {
     private final JwtService jwtService;
     
     public AuthResponse register(RegisterRequest request) {
-        // Verificar si el usuario ya existe
+        // Verifica si el usuario ya existe
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("User already exists");
         }
@@ -30,7 +30,6 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
-                .active(true)
                 .build();
         
         User savedUser = userRepository.save(user);
@@ -51,10 +50,6 @@ public class AuthService {
         
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
-        }
-        
-        if (!user.isActive()) {
-            throw new RuntimeException("User account is disabled");
         }
         
         var jwtToken = jwtService.generateToken(user.getEmail());

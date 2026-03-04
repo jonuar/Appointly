@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "app_users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,8 +26,6 @@ public class User {
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private Role role = Role.USER;
-    
-    @Column(nullable = false)
-    private boolean active = true;
 }
