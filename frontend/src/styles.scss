@@ -1,36 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap');
 
 /* ── Neobrutalism Design Tokens ─────────────────────── */
 :root {
-  --color-bg:         #f0f0f0;
-  --color-surface:    #ffffff;
-  --color-surface-2:  #e0e0e0;
-  --color-border:     #000000;
-  --color-primary:    #ffde59; /* Cyber Yellow */
-  --color-primary-h:  #ffbd59;
-  --color-accent:     #ff5757; /* Bright Red */
-  --color-text:       #000000;
-  --color-muted:      #333333;
-  --color-error:      #ff3131;
-  --color-success:    #00bf63;
-  --radius-sm:        0px; /* Neobrutalism often uses sharp or very slight rounding */
-  --radius-md:        4px;
-  --radius-lg:        8px;
-  
-  /* The characteristic Neobrutalism "Hard Shadow" */
-  --shadow-neo:       4px 4px 0px #000000;
-  --shadow-neo-lg:    8px 8px 0px #000000;
-  --transition:       all 0.15s cubic-bezier(0, 0, 0, 1);
+  --color-bg: #F7FFF7;
+  /* Off White */
+  --color-surface: #ffffff;
+  --color-surface-2: #e0e0e0;
+  --color-border: #1A1A1D;
+  /* Deep Dark */
+  --color-primary: #FFD200;
+  /* Yellow */
+  --color-primary-h: #F7C600;
+  --color-accent: #FF6B6B;
+  /* Red/Soft Red */
+  --color-text: #1A1A1D;
+  --color-muted: #333333;
+  --color-error: #FF6B6B;
+  --color-success: #4ECDC4;
+  /* Teal/Cyan */
+  --radius-sm: 0px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  --shadow-neo: 4px 4px 0px #1A1A1D;
+  --shadow-neo-lg: 8px 8px 0px #1A1A1D;
+  --transition: all 0.15s cubic-bezier(0, 0, 0, 1);
 }
 
 /* ── Reset & Base ──────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html, body {
+html,
+body {
   height: 100%;
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Sora', sans-serif;
   font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -42,7 +53,12 @@ a {
   text-decoration-thickness: 2px;
   font-weight: 700;
   transition: var(--transition);
-  &:hover { background-color: var(--color-primary); color: #000; text-decoration: none; }
+
+  &:hover {
+    background-color: var(--color-primary);
+    color: #000;
+    text-decoration: none;
+  }
 }
 
 /* ── Auth Layout (shared by Login & Register) ─────── */
@@ -53,8 +69,8 @@ a {
   justify-content: center;
   padding: 24px;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(167,139,250,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(167, 139, 250, 0.10) 0%, transparent 50%),
     var(--color-bg);
 }
 
@@ -130,7 +146,9 @@ a {
     transition: var(--transition);
     outline: none;
 
-    &::placeholder { color: #888; }
+    &::placeholder {
+      color: #888;
+    }
 
     &:focus {
       background: var(--color-primary);
@@ -151,7 +169,7 @@ a {
 
 .alert-error {
   background: var(--color-error-bg);
-  border: 1px solid rgba(248,113,113,0.3);
+  border: 1px solid rgba(248, 113, 113, 0.3);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   font-size: 0.875rem;
@@ -208,7 +226,7 @@ a {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -216,10 +234,19 @@ a {
 
 /* ── Animations ───────────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

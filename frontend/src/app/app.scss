@@ -1,17 +1,17 @@
 :root {
-  --primary-color: var(--color-primary, #ffde59);
-  --secondary-color: var(--color-accent, #ff5757);
-  --accent-color: var(--color-primary, #ffde59);
-  --bg-color: var(--color-bg, #f0f0f0);
-  --text-dark: var(--color-text, #000000);
+  --primary-color: var(--color-primary, #FFD200);
+  --secondary-color: var(--color-accent, #FF6B6B);
+  --accent-color: var(--color-primary, #FFD200);
+  --bg-color: var(--color-bg, #F7FFF7);
+  --text-dark: var(--color-text, #1A1A1D);
   --text-light: var(--color-muted, #333333);
-  --success: var(--color-success, #00bf63);
-  --error: var(--color-error, #ff3131);
-  --warning: #ffbd59;
-  --info: #3b82f6;
+  --success: var(--color-success, #4ECDC4);
+  --error: var(--color-error, #FF6B6B);
+  --warning: #FFD200;
+  --info: #4ECDC4;
   --glass-bg: #ffffff;
-  --glass-border: #000000;
-  --shadow-premium: var(--shadow-neo, 4px 4px 0px #000000);
+  --glass-border: #1A1A1D;
+  --shadow-premium: var(--shadow-neo, 4px 4px 0px #1A1A1D);
 }
 
 body {

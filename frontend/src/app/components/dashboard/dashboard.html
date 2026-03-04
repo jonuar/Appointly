@@ -3,15 +3,22 @@
     <header class="main-header">
         <div class="header-content">
             <div class="brand">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
                     <path
                         d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
                 </svg>
                 <span>Appointly</span>
             </div>
+
+            <nav class="main-nav">
+                <button class="nav-link-btn">Nosotros</button>
+                <button class="nav-link-btn">Contacto</button>
+                <button class="nav-link-btn tutorial-btn">¿Cómo usar?</button>
+            </nav>
+
             <div class="user-meta" *ngIf="currentUser">
-                <span>Bienvenido, <strong>{{ currentUser.name }}</strong></span>
-                <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+                <span class="welcome-text">Hola, <strong>{{ currentUser.name }}</strong></span>
+                <button class="btn-logout-neo" (click)="logout()">Salir</button>
             </div>
         </div>
     </header>

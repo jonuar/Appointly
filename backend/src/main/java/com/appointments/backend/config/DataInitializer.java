@@ -1,6 +1,7 @@
 package com.appointments.backend.config;
 
 import com.appointments.backend.model.Role;
+import com.appointments.backend.model.ServiceItem;
 import com.appointments.backend.model.User;
 import com.appointments.backend.repository.ServiceItemRepository;
 import com.appointments.backend.repository.UserRepository;
