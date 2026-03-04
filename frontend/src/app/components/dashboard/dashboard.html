@@ -48,23 +48,57 @@
         </section>
 
         <!-- My Reservations -->
-        <section class="reservations-section" *ngIf="reservations.length > 0">
+        <section class="reservations-section">
             <div class="section-header">
                 <h2>Mis Reservas</h2>
+                <div class="tabs-container">
+                    <button class="tab-btn" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
+                        Próximas Citas ({{ upcomingReservations.length }})
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'past'" (click)="setTab('past')">
+                        Historial ({{ pastReservations.length }})
+                    </button>
+                </div>
             </div>
-            <div class="reservations-list">
-                <div class="reservation-item" *ngFor="let res of reservations">
+
+            <!-- Upcoming List -->
+            <div class="reservations-list" *ngIf="activeTab === 'upcoming'">
+                <div class="reservation-item" *ngFor="let res of upcomingReservations">
                     <div class="res-body">
                         <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
                         <span class="res-service">{{ res.service.name }}</span>
                     </div>
                     <div class="res-actions">
-                        <span class="res-status" [class]="res.status?.toLowerCase()">{{ res.status }}</span>
-                        <button class="btn-cancel" (click)="deleteReservation(res.id!)" title="Cancelar Reserva">
+                        <span class="res-status" [class]="res.status?.toLowerCase()">
+                            {{ res.status }}
+                        </span>
+                        <button *ngIf="res.status === 'PENDING'" class="btn-confirm"
+                            (click)="updateStatus(res.id!, 'CONFIRMED')" title="Confirmar Reserva">
+                            Confirmar
+                        </button>
+                        <button class="btn-cancel" (click)="updateStatus(res.id!, 'CANCELLED')"
+                            title="Cancelar Reserva">
                             &times;
                         </button>
                     </div>
                 </div>
+                <p class="empty-msg" *ngIf="upcomingReservations.length === 0">No tienes citas próximas.</p>
+            </div>
+
+            <!-- Past List -->
+            <div class="reservations-list" *ngIf="activeTab === 'past'">
+                <div class="reservation-item past-item" *ngFor="let res of pastReservations">
+                    <div class="res-body">
+                        <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
+                        <span class="res-service">{{ res.service.name }}</span>
+                    </div>
+                    <div class="res-actions">
+                        <span class="res-status" [class]="res.status?.toLowerCase()">
+                            {{ res.status }}
+                        </span>
+                    </div>
+                </div>
+                <p class="empty-msg" *ngIf="pastReservations.length === 0">No hay historial de citas.</p>
             </div>
         </section>
     </main>

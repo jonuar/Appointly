@@ -16,11 +16,13 @@ import { NotificationService } from '../../services/notification.service';
 export class DashboardComponent implements OnInit {
 
   services: ServiceItem[] = [];
-  reservations: Reservation[] = [];
+  upcomingReservations: Reservation[] = [];
+  pastReservations: Reservation[] = [];
   reservationForm!: FormGroup;
   currentUser: any;
   showModal = false;
   selectedService: ServiceItem | null = null;
+  activeTab: 'upcoming' | 'past' = 'upcoming';
 
   constructor(
     private reservationService: ReservationService,
@@ -72,7 +74,7 @@ export class DashboardComponent implements OnInit {
       await this.loadReservations();
       this.closeModal();
     } catch (error) {
-      // Handled globally, but we can do extra logic here if needed.
+      // Handled globally
     }
   }
 
@@ -81,19 +83,38 @@ export class DashboardComponent implements OnInit {
   }
 
   async loadReservations(): Promise<void> {
-    this.reservations = await firstValueFrom(this.reservationService.getMyReservations());
+    const all = await firstValueFrom(this.reservationService.getMyReservations());
+    const now = new Date();
+
+    // Sort by date
+    all.sort((a, b) => new Date(a.reservationDateTime).getTime() - new Date(b.reservationDateTime).getTime());
+
+    this.upcomingReservations = all.filter(r => {
+      const date = new Date(r.reservationDateTime);
+      return date >= now && r.status !== 'CANCELLED';
+    });
+
+    this.pastReservations = all.filter(r => {
+      const date = new Date(r.reservationDateTime);
+      return date < now || r.status === 'CANCELLED';
+    });
   }
 
-  async deleteReservation(id: number): Promise<void> {
-    if (confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
+  async updateStatus(id: number, status: string): Promise<void> {
+    const action = status === 'CANCELLED' ? 'cancelar' : 'confirmar';
+    if (confirm(`¿Estás seguro de que deseas ${action} esta reserva?`)) {
       try {
-        await firstValueFrom(this.reservationService.cancelReservation(id));
-        this.notificationService.info('Reserva cancelada.');
+        await firstValueFrom(this.reservationService.updateReservationStatus(id, status));
+        this.notificationService.success(`Reserva ${status === 'CANCELLED' ? 'cancelada' : 'confirmada'} con éxito.`);
         await this.loadReservations();
       } catch (error) {
         // Handled globally
       }
     }
+  }
+
+  setTab(tab: 'upcoming' | 'past'): void {
+    this.activeTab = tab;
   }
 
   logout(): void {

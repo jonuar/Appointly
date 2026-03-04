@@ -9,9 +9,12 @@ import com.appointments.backend.repository.ServiceItemRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import com.appointments.backend.model.ReservationStatus;
+import com.appointments.backend.model.Role;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -60,12 +63,38 @@ public class ReservationController {
         Reservation reservation = repository.findById(id)
             .orElseThrow(() -> new RuntimeException("Reservation not found"));
             
-        if (!reservation.getUser().getId().equals(user.getId())) {
+        if (!reservation.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
             return ResponseEntity.status(403).body("No tienes permiso para cancelar esta reserva");
         }
         
         repository.delete(reservation);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody Map<String, String> body, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Reservation reservation = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Reservation not found"));
+            
+        // Security check: Only owner or Admin
+        if (!reservation.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
+            return ResponseEntity.status(403).body("No tienes permiso para modificar esta reserva");
+        }
+
+        String statusStr = body.get("status");
+        if (statusStr == null) {
+            return ResponseEntity.badRequest().body("El campo 'status' es obligatorio");
+        }
+
+        try {
+            ReservationStatus newStatus = ReservationStatus.valueOf(statusStr.toUpperCase());
+            reservation.setStatus(newStatus);
+            Reservation updated = repository.save(reservation);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Estado no válido");
+        }
     }
 
     @GetMapping("/user/{userId}")

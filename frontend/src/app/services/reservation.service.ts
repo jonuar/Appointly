@@ -45,5 +45,7 @@ export class ReservationService {
         return this.http.delete<void>(`${this.apiUrl}/reservations/${id}`);
     }
 
-
+    updateReservationStatus(id: number, status: string): Observable<Reservation> {
+        return this.http.patch<Reservation>(`${this.apiUrl}/reservations/${id}/status`, { status });
+    }
 }
