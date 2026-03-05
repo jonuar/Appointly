@@ -15,15 +15,22 @@ A full-stack application for appointment booking and service management.
 - **Neobrutalism Design System** with high-contrast UI
 - Responsive Angular frontend with Sora typography
 
-## Interface Preview
+## UI Preview
 
-![Login Mockup](file:///C:/Users/J/.gemini/antigravity/brain/f0e9c861-42e6-4f39-8027-20c4865a0c8c/neobrutalism_login_mockup_png_1772673663257.png)
 
-*Consistent high-contrast login experience.*
+*Consistent high-contrast auth experience.*
+![Login Mockup](assets/login.jpg)
 
-![Dashboard Mockup](file:///C:/Users/J/.gemini/antigravity/brain/f0e9c861-42e6-4f39-8027-20c4865a0c8c/neobrutalism_dashboard_mockup_png_1772673623860.png)
+![Register Mockup](assets/register.jpg)
 
-*Professional dashboard with service grid and reservation management.*
+
+*Dashboard with service grid.*
+![Dashboard Mockup](assets/dashboard.jpg)
+
+
+*Reservation modal.*
+![Reservations Mockup](assets/reservation.jpg)
+
 
 ## Requirements
 - Java 17 or higher
