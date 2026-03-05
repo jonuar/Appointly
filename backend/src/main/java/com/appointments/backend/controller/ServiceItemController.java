@@ -3,6 +3,7 @@ package com.appointments.backend.controller;
 import com.appointments.backend.model.ServiceItem;
 import com.appointments.backend.repository.ServiceItemRepository;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 
 import java.util.List;
@@ -25,5 +26,17 @@ public class ServiceItemController {
     @PostMapping
     public ServiceItem createService(@RequestBody ServiceItem item) {
         return repository.save(item);
+    }
+
+    @PutMapping("/{id}")
+    public ServiceItem updateService(@PathVariable Long id, @RequestBody ServiceItem item) {
+        item.setId(id);
+        return repository.save(item);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteService(@PathVariable Long id) {
+        repository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

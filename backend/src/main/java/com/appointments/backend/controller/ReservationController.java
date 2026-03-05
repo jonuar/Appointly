@@ -63,6 +63,7 @@ public class ReservationController {
         Reservation reservation = repository.findById(id)
             .orElseThrow(() -> new RuntimeException("Reservation not found"));
             
+        // User can cancel their own, Admin can delete any
         if (!reservation.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
             return ResponseEntity.status(403).body(Map.of("message", "No tienes permiso para cancelar esta reserva"));
         }
@@ -74,14 +75,15 @@ public class ReservationController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody Map<String, String> body, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+        
+        // SECURITY: Only ADMIN can manually update status (Confirm, Complete)
+        if (user.getRole() != Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("message", "Solo un administrador puede confirmar o cambiar el estado de las citas"));
+        }
+
         Reservation reservation = repository.findById(id)
             .orElseThrow(() -> new RuntimeException("Reservation not found"));
             
-        // Security check: Only owner or Admin
-        if (!reservation.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            return ResponseEntity.status(403).body(Map.of("message", "No tienes permiso para modificar esta reserva"));
-        }
-
         String statusStr = body.get("status");
         if (statusStr == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "El campo 'status' es obligatorio"));

@@ -3,6 +3,7 @@ package com.appointments.backend.controller;
 import com.appointments.backend.model.User;
 import com.appointments.backend.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -25,5 +26,11 @@ public class UserController {
     @GetMapping
     public List<User> getAll() {
         return repository.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        repository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

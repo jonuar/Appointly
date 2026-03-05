@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"authorities", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled"})
 public class User implements UserDetails {
     
     @Id
@@ -28,6 +29,7 @@ public class User implements UserDetails {
     private String name;
     
     @Column(nullable = false)
+    @com.fasterxml.jackson.annotation.JsonProperty(access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String password;
     
     @Enumerated(EnumType.STRING)

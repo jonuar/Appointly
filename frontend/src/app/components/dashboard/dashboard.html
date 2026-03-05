@@ -25,90 +25,216 @@
 
     <main class="content">
 
-        <!-- Services Grid -->
-        <section class="services-section">
-            <div class="section-header">
-                <h2>Servicios Disponibles</h2>
-                <p>Elige el servicio que prefieras y reserva tu cita.</p>
+        <!-- ADMIN DASHBOARD -->
+        <ng-container *ngIf="isAdmin; else userDashboard">
+
+            <!-- Admin Stats & Charts -->
+            <section class="admin-stats">
+                <div class="section-header">
+                    <h2>Panel de Control Admin</h2>
+                    <p>Resumen visual de servicios y actividad.</p>
+                </div>
+                <div class="chart-container-neo">
+                    <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType"></canvas>
+                </div>
+            </section>
+
+            <!-- Admin Navigation Tabs -->
+            <div class="admin-nav-tabs">
+                <button class="tab-btn" [class.active]="activeTab === 'pending'" (click)="setTab('pending')">Cola de
+                    Aprobación</button>
+                <button class="tab-btn" [class.active]="activeTab === 'services'"
+                    (click)="setTab('services')">Servicios</button>
+                <button class="tab-btn" [class.active]="activeTab === 'users'"
+                    (click)="setTab('users')">Usuarios</button>
+                <button class="tab-btn" [class.active]="activeTab === 'availability'"
+                    (click)="setTab('availability')">Disponibilidad</button>
             </div>
 
-            <div class="services-grid">
-                <div class="service-card" *ngFor="let service of services">
-                    <div class="service-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v10l4.5 4.5" />
-                            <circle cx="12" cy="12" r="10" />
-                        </svg>
-                    </div>
-                    <div class="service-info">
-                        <h3>{{ service.name }}</h3>
-                        <p>{{ service.description }}</p>
-                        <div class="service-meta">
-                            <span class="price">${{ service.price }}</span>
-                            <span class="duration">{{ service.durationInMinutes }} min</span>
+            <!-- Approval Queue -->
+            <section class="admin-section" *ngIf="activeTab === 'pending'">
+                <div class="reservations-list">
+                    <div class="reservation-item" *ngFor="let res of allReservations">
+                        <div class="res-body">
+                            <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
+                            <span class="res-service"><strong>{{ res.user.name }}</strong> - {{ res.service.name
+                                }}</span>
+                        </div>
+                        <div class="res-actions">
+                            <span class="res-status" [class]="res.status?.toLowerCase()">{{ res.status }}</span>
+                            <button *ngIf="res.status === 'PENDING'" class="btn-confirm"
+                                (click)="updateStatus(res.id!, 'CONFIRMED')">Aprobar</button>
+                            <button class="btn-cancel" (click)="updateStatus(res.id!, 'CANCELLED')">&times;</button>
                         </div>
                     </div>
-                    <button class="btn-book" (click)='openBookingModal(service)'>Reservar</button>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- My Reservations -->
-        <section class="reservations-section">
-            <div class="section-header">
-                <h2>Mis Reservas</h2>
-                <div class="tabs-container">
-                    <button class="tab-btn" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
-                        Próximas Citas ({{ upcomingReservations.length }})
-                    </button>
-                    <button class="tab-btn" [class.active]="activeTab === 'past'" (click)="setTab('past')">
-                        Historial ({{ pastReservations.length }})
-                    </button>
+            <!-- Admin Services Management -->
+            <section class="admin-grid-section" *ngIf="activeTab === 'services'">
+                <div class="grid-header">
+                    <button class="btn-primary-neo" (click)="showServiceModal = true">+ Nuevo Servicio</button>
                 </div>
-            </div>
-
-            <!-- Upcoming List -->
-            <div class="reservations-list" *ngIf="activeTab === 'upcoming'">
-                <div class="reservation-item" *ngFor="let res of upcomingReservations">
-                    <div class="res-body">
-                        <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
-                        <span class="res-service">{{ res.service.name }}</span>
+                <div class="services-grid">
+                    <div class="service-card" *ngFor="let service of services">
+                        <div class="service-info">
+                            <h3>{{ service.name }}</h3>
+                            <p>${{ service.price }} - {{ service.durationInMinutes }} min</p>
+                        </div>
+                        <button class="btn-cancel" (click)="onDeleteService(service.id)">Eliminar</button>
                     </div>
-                    <div class="res-actions">
-                        <span class="res-status" [class]="res.status?.toLowerCase()">
-                            {{ res.status }}
-                        </span>
-                        <button *ngIf="res.status === 'PENDING'" class="btn-confirm"
-                            (click)="updateStatus(res.id!, 'CONFIRMED')" title="Confirmar Reserva">
-                            Confirmar
+                </div>
+            </section>
+
+            <!-- User Management -->
+            <section class="admin-section" *ngIf="activeTab === 'users'">
+                <div class="reservations-list">
+                    <div class="reservation-item" *ngFor="let user of allUsers">
+                        <div class="res-body">
+                            <span class="res-date">{{ user.name }}</span>
+                            <span class="res-service">{{ user.email }} ({{ user.role }})</span>
+                        </div>
+                        <button class="btn-cancel" *ngIf="user.role !== 'ADMIN'"
+                            (click)="deleteUser(user.id)">Expulsar</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Availability Scheduling -->
+            <section class="admin-section" *ngIf="activeTab === 'availability'">
+                <div class="grid-header">
+                    <button class="btn-primary-neo" (click)="showAvailabilityModal = true">+ Añadir Bloque
+                        Horario</button>
+                </div>
+                <div class="reservations-list">
+                    <div class="reservation-item" *ngFor="let avail of availability">
+                        <div class="res-body">
+                            <span class="res-date">{{ avail.availableDate | date }}</span>
+                            <span class="res-service">{{ avail.startTime }} - {{ avail.endTime }}</span>
+                        </div>
+                        <button class="btn-cancel" (click)="onDeleteAvailable(avail.id!)">&times;</button>
+                    </div>
+                </div>
+            </section>
+        </ng-container>
+
+        <!-- USER DASHBOARD -->
+        <ng-template #userDashboard>
+            <section class="services-section">
+                <div class="section-header">
+                    <h2>Servicios Disponibles</h2>
+                    <p>Elige el servicio que prefieras y reserva tu cita.</p>
+                </div>
+
+                <div class="services-grid">
+                    <div class="service-card" *ngFor="let service of services">
+                        <div class="service-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v10l4.5 4.5" />
+                                <circle cx="12" cy="12" r="10" />
+                            </svg>
+                        </div>
+                        <div class="service-info">
+                            <h3>{{ service.name }}</h3>
+                            <p>{{ service.description }}</p>
+                            <div class="service-meta">
+                                <span class="price">${{ service.price }}</span>
+                                <span class="duration">{{ service.durationInMinutes }} min</span>
+                            </div>
+                        </div>
+                        <button class="btn-book" (click)='openBookingModal(service)'>Reservar</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="reservations-section">
+                <div class="section-header">
+                    <h2>Mis Reservas</h2>
+                    <div class="tabs-container">
+                        <button class="tab-btn" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
+                            Próximas Citas ({{ upcomingReservations.length }})
                         </button>
-                        <button class="btn-cancel" (click)="updateStatus(res.id!, 'CANCELLED')"
-                            title="Cancelar Reserva">
-                            &times;
+                        <button class="tab-btn" [class.active]="activeTab === 'past'" (click)="setTab('past')">
+                            Historial ({{ pastReservations.length }})
                         </button>
                     </div>
                 </div>
-                <p class="empty-msg" *ngIf="upcomingReservations.length === 0">No tienes citas próximas.</p>
-            </div>
 
-            <!-- Past List -->
-            <div class="reservations-list" *ngIf="activeTab === 'past'">
-                <div class="reservation-item past-item" *ngFor="let res of pastReservations">
-                    <div class="res-body">
-                        <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
-                        <span class="res-service">{{ res.service.name }}</span>
+                <div class="reservations-list" *ngIf="activeTab === 'upcoming'">
+                    <div class="reservation-item" *ngFor="let res of upcomingReservations">
+                        <div class="res-body">
+                            <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
+                            <span class="res-service">{{ res.service.name }}</span>
+                        </div>
+                        <div class="res-actions">
+                            <span class="res-status" [class]="res.status?.toLowerCase()">
+                                {{ res.status }}
+                            </span>
+                            <button class="btn-cancel" (click)="updateStatus(res.id!, 'CANCELLED')"
+                                title="Cancelar Reserva">
+                                &times;
+                            </button>
+                        </div>
                     </div>
-                    <div class="res-actions">
-                        <span class="res-status" [class]="res.status?.toLowerCase()">
-                            {{ res.status }}
-                        </span>
-                    </div>
+                    <p class="empty-msg" *ngIf="upcomingReservations.length === 0">No tienes citas próximas.</p>
                 </div>
-                <p class="empty-msg" *ngIf="pastReservations.length === 0">No hay historial de citas.</p>
-            </div>
-        </section>
+
+                <div class="reservations-list" *ngIf="activeTab === 'past'">
+                    <div class="reservation-item past-item" *ngFor="let res of pastReservations">
+                        <div class="res-body">
+                            <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
+                            <span class="res-service">{{ res.service.name }}</span>
+                        </div>
+                        <div class="res-actions">
+                            <span class="res-status" [class]="res.status?.toLowerCase()">
+                                {{ res.status }}
+                            </span>
+                        </div>
+                    </div>
+                    <p class="empty-msg" *ngIf="pastReservations.length === 0">No hay historial de citas.</p>
+                </div>
+            </section>
+        </ng-template>
+
     </main>
+
+    <!-- Admin: Add Service Modal -->
+    <div class="modal-backdrop" *ngIf="showServiceModal" (click)="showServiceModal = false">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Nuevo Servicio</h3>
+                <button class="btn-close" (click)="showServiceModal = false">&times;</button>
+            </div>
+            <form [formGroup]="serviceForm" (ngSubmit)="onAddService()" class="modal-form">
+                <input type="text" formControlName="name" placeholder="Nombre del servicio">
+                <textarea formControlName="description" placeholder="Descripción"></textarea>
+                <input type="number" formControlName="price" placeholder="Precio ($)">
+                <input type="number" formControlName="durationInMinutes" placeholder="Duración (min)">
+                <div class="modal-footer">
+                    <button type="submit" class="btn-primary">Guardar Servicio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin: Availability Modal -->
+    <div class="modal-backdrop" *ngIf="showAvailabilityModal" (click)="showAvailabilityModal = false">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Añadir Disponibilidad</h3>
+                <button class="btn-close" (click)="showAvailabilityModal = false">&times;</button>
+            </div>
+            <form [formGroup]="availabilityForm" (ngSubmit)="onAddAvailable()" class="modal-form">
+                <input type="date" formControlName="availableDate">
+                <input type="time" formControlName="startTime">
+                <input type="time" formControlName="endTime">
+                <div class="modal-footer">
+                    <button type="submit" class="btn-primary">Añadir Horario</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Booking Modal -->
     <div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()">
