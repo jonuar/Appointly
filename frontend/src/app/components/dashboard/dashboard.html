@@ -10,7 +10,7 @@
                 <span>Appointly</span>
             </div>
 
-            <nav class="main-nav">
+            <nav class="main-nav" *ngIf="!isAdmin">
                 <button class="nav-link-btn">Nosotros</button>
                 <button class="nav-link-btn">Contacto</button>
                 <button class="nav-link-btn tutorial-btn">¿Cómo usar?</button>

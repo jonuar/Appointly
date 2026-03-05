@@ -24,12 +24,12 @@ A full-stack application for appointment booking and service management.
 ![Register Mockup](assets/register.jpg)
 
 
-*Dashboard with service grid.*
-![Dashboard Mockup](assets/dashboard.jpg)
+*Client dashboard with service grid.*
+![Dashboard Mockup](assets/dashboard_client.jpg)
 
 
-*Reservation modal.*
-![Reservations Mockup](assets/reservation.jpg)
+*Admin dashboard.*
+![Reservations Mockup](assets/dashboard_admin.jpg)
 
 
 ## Requirements
