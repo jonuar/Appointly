@@ -15,7 +15,7 @@ A full-stack application for appointment booking and service management.
 - **Neobrutalism Design System** with high-contrast UI
 - Responsive Angular frontend with Sora typography
 
-## Interface Preview (Neobrutalism)
+## Interface Preview
 
 ![Login Mockup](file:///C:/Users/J/.gemini/antigravity/brain/f0e9c861-42e6-4f39-8027-20c4865a0c8c/neobrutalism_login_mockup_png_1772673663257.png)
 
