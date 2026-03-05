@@ -27,99 +27,110 @@
 
         <!-- ADMIN DASHBOARD -->
         <ng-container *ngIf="isAdmin; else userDashboard">
-
-            <!-- Admin Stats & Charts -->
-            <section class="admin-stats">
-                <div class="section-header">
-                    <h2>Panel de Control Admin</h2>
-                    <p>Resumen visual de servicios y actividad.</p>
-                </div>
-                <div class="chart-container-neo">
-                    <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType"></canvas>
-                </div>
-            </section>
-
-            <!-- Admin Navigation Tabs -->
-            <div class="admin-nav-tabs">
-                <button class="tab-btn" [class.active]="activeTab === 'pending'" (click)="setTab('pending')">Cola de
-                    Aprobación</button>
-                <button class="tab-btn" [class.active]="activeTab === 'services'"
-                    (click)="setTab('services')">Servicios</button>
-                <button class="tab-btn" [class.active]="activeTab === 'users'"
-                    (click)="setTab('users')">Usuarios</button>
-                <button class="tab-btn" [class.active]="activeTab === 'availability'"
-                    (click)="setTab('availability')">Disponibilidad</button>
-            </div>
-
-            <!-- Approval Queue -->
-            <section class="admin-section" *ngIf="activeTab === 'pending'">
-                <div class="reservations-list">
-                    <div class="reservation-item" *ngFor="let res of allReservations">
-                        <div class="res-body">
-                            <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
-                            <span class="res-service"><strong>{{ res.user.name }}</strong> - {{ res.service.name
-                                }}</span>
-                            <p class="res-notes" *ngIf="res.notes"><em>Notas:</em> {{ res.notes }}</p>
+            <div class="admin-dashboard-layout">
+                <!-- Admin Stats & Charts (Sidebar) -->
+                <div class="admin-side-panel">
+                    <section class="admin-stats">
+                        <div class="section-header">
+                            <h2>Panel Admin</h2>
+                            <p>Resumen visual de citas por servicio.</p>
                         </div>
-                        <div class="res-actions">
-                            <span class="res-status" [class]="res.status?.toLowerCase()">{{ res.status }}</span>
-                            <button *ngIf="res.status === 'PENDING'" class="btn-confirm"
-                                (click)="updateStatus(res.id!, 'CONFIRMED')">Aprobar</button>
-                            <button class="btn-cancel" (click)="updateStatus(res.id!, 'CANCELLED')">&times;</button>
+                        <div class="chart-container-neo">
+                            <canvas baseChart [data]="barChartData" [options]="barChartOptions"
+                                [type]="barChartType"></canvas>
                         </div>
+                    </section>
+                </div>
+
+                <!-- Admin Main Content -->
+                <div class="admin-main-panel">
+                    <!-- Admin Navigation Tabs -->
+                    <div class="admin-nav-tabs">
+                        <button class="tab-btn" [class.active]="activeTab === 'pending'"
+                            (click)="setTab('pending')">Cola de
+                            Aprobación</button>
+                        <button class="tab-btn" [class.active]="activeTab === 'services'"
+                            (click)="setTab('services')">Servicios</button>
+                        <button class="tab-btn" [class.active]="activeTab === 'users'"
+                            (click)="setTab('users')">Usuarios</button>
+                        <button class="tab-btn" [class.active]="activeTab === 'availability'"
+                            (click)="setTab('availability')">Disponibilidad</button>
                     </div>
-                </div>
-            </section>
 
-            <!-- Admin Services Management -->
-            <section class="admin-grid-section" *ngIf="activeTab === 'services'">
-                <div class="grid-header">
-                    <button class="btn-primary-neo" (click)="openAddServiceModal()">+ Nuevo Servicio</button>
-                </div>
-                <div class="services-grid">
-                    <div class="service-card" *ngFor="let service of services">
-                        <div class="service-info">
-                            <h3>{{ service.name }}</h3>
-                            <p>${{ service.price }} - {{ service.durationInMinutes }} min</p>
+                    <!-- Approval Queue -->
+                    <section class="admin-section" *ngIf="activeTab === 'pending'">
+                        <div class="reservations-list">
+                            <div class="reservation-item" *ngFor="let res of allReservations">
+                                <div class="res-body">
+                                    <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
+                                    <span class="res-service"><strong>{{ res.user.name }}</strong> - {{ res.service.name
+                                        }}</span>
+                                    <p class="res-notes" *ngIf="res.notes"><em>Notas:</em> {{ res.notes }}</p>
+                                </div>
+                                <div class="res-actions">
+                                    <span class="res-status" [class]="res.status?.toLowerCase()">{{ res.status }}</span>
+                                    <button *ngIf="res.status === 'PENDING'" class="btn-confirm"
+                                        (click)="updateStatus(res.id!, 'CONFIRMED')">Aprobar</button>
+                                    <button class="btn-cancel"
+                                        (click)="updateStatus(res.id!, 'CANCELLED')">&times;</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="res-actions">
-                            <button class="btn-confirm" (click)="openEditServiceModal(service)">Editar</button>
-                            <button class="btn-danger-neo" (click)="onDeleteService(service.id)">Eliminar</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                    </section>
 
-            <!-- User Management -->
-            <section class="admin-section" *ngIf="activeTab === 'users'">
-                <div class="reservations-list">
-                    <div class="reservation-item" *ngFor="let user of allUsers">
-                        <div class="res-body">
-                            <span class="res-date">{{ user.name }}</span>
-                            <span class="res-service">{{ user.email }} ({{ user.role }})</span>
+                    <!-- Admin Services Management -->
+                    <section class="admin-grid-section" *ngIf="activeTab === 'services'">
+                        <div class="grid-header">
+                            <button class="btn-primary-neo" (click)="openAddServiceModal()">+ Nuevo Servicio</button>
                         </div>
-                        <button class="btn-danger-neo" *ngIf="user.role !== 'ADMIN'"
-                            (click)="deleteUser(user.id)">Expulsar</button>
-                    </div>
-                </div>
-            </section>
+                        <div class="services-grid">
+                            <div class="service-card" *ngFor="let service of services">
+                                <div class="service-info">
+                                    <h3>{{ service.name }}</h3>
+                                    <p>${{ service.price }} - {{ service.durationInMinutes }} min</p>
+                                </div>
+                                <div class="res-actions">
+                                    <button class="btn-confirm" (click)="openEditServiceModal(service)">Editar</button>
+                                    <button class="btn-danger-neo"
+                                        (click)="onDeleteService(service.id)">Eliminar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-            <!-- Availability Scheduling -->
-            <section class="admin-section" *ngIf="activeTab === 'availability'">
-                <div class="grid-header">
-                    <button class="btn-primary-neo" (click)="showAvailabilityModal = true">+ Añadir Bloque
-                        Horario</button>
-                </div>
-                <div class="reservations-list">
-                    <div class="reservation-item" *ngFor="let avail of availability">
-                        <div class="res-body">
-                            <span class="res-date">{{ avail.availableDate | date }}</span>
-                            <span class="res-service">{{ avail.startTime }} - {{ avail.endTime }}</span>
+                    <!-- User Management -->
+                    <section class="admin-section" *ngIf="activeTab === 'users'">
+                        <div class="reservations-list">
+                            <div class="reservation-item" *ngFor="let user of allUsers">
+                                <div class="res-body">
+                                    <span class="res-date">{{ user.name }}</span>
+                                    <span class="res-service">{{ user.email }} ({{ user.role }})</span>
+                                </div>
+                                <button class="btn-danger-neo" *ngIf="user.role !== 'ADMIN'"
+                                    (click)="deleteUser(user.id)">Expulsar</button>
+                            </div>
                         </div>
-                        <button class="btn-cancel" (click)="onDeleteAvailable(avail.id!)">&times;</button>
-                    </div>
-                </div>
-            </section>
+                    </section>
+
+                    <!-- Availability Scheduling -->
+                    <section class="admin-section" *ngIf="activeTab === 'availability'">
+                        <div class="grid-header">
+                            <button class="btn-primary-neo" (click)="showAvailabilityModal = true">+ Añadir Bloque
+                                Horario</button>
+                        </div>
+                        <div class="reservations-list">
+                            <div class="reservation-item" *ngFor="let avail of availability">
+                                <div class="res-body">
+                                    <span class="res-date">{{ avail.availableDate | date }}</span>
+                                    <span class="res-service">{{ avail.startTime }} - {{ avail.endTime }}</span>
+                                </div>
+                                <button class="btn-cancel" (click)="onDeleteAvailable(avail.id!)">&times;</button>
+                            </div>
+                        </div>
+                    </section>
+
+                </div> <!-- End .admin-main-panel -->
+            </div> <!-- End .admin-dashboard-layout -->
         </ng-container>
 
         <!-- USER DASHBOARD -->

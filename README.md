@@ -18,17 +18,17 @@ A full-stack application for appointment booking and service management.
 ## UI Preview
 
 
-*Consistent high-contrast auth experience.*
+*Consistent high-contrast auth experience*
 ![Login Mockup](assets/login.jpg)
 
 ![Register Mockup](assets/register.jpg)
 
 
-*Client dashboard with service grid.*
+*Client dashboard*
 ![Dashboard Mockup](assets/dashboard_client.jpg)
 
 
-*Admin dashboard.*
+*Admin dashboard*
 ![Reservations Mockup](assets/dashboard_admin.jpg)
 
 

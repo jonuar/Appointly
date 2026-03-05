@@ -49,8 +49,12 @@ export class DashboardComponent implements OnInit {
   // Chart Logic
   public barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
-    scales: { x: {}, y: { min: 0 } },
-    plugins: { legend: { display: true } }
+    maintainAspectRatio: false,
+    scales: {
+      x: {},
+      y: { min: 0, ticks: { stepSize: 1 } }
+    },
+    plugins: { legend: { display: false } }
   };
   public barChartType: ChartType = 'bar';
   public barChartData: ChartData<'bar'> = { labels: [], datasets: [] };
@@ -126,7 +130,13 @@ export class DashboardComponent implements OnInit {
     this.barChartData = {
       labels: Object.keys(counts),
       datasets: [
-        { data: Object.values(counts), label: 'Reservas por Servicio', backgroundColor: '#FFD200', borderColor: '#1A1A1D', borderWidth: 2 }
+        {
+          data: Object.values(counts),
+          label: 'Reservas por Servicio',
+          backgroundColor: '#4ade80',  // Neobrutalist Success/Accent color
+          borderColor: '#1A1A1D',
+          borderWidth: 2
+        }
       ]
     };
   }
