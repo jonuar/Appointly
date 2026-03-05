@@ -3,7 +3,7 @@ A full-stack application for appointment booking and service management.
 
 ## Project Structure
 - `backend/` — Spring Boot REST API for users, services, and reservations
-- `frontend/` — (planned) Angular application for user interface
+- `frontend/` — Angular application for user interface
 
 ## Features
 - User registration and management
@@ -12,12 +12,23 @@ A full-stack application for appointment booking and service management.
 - RESTful API (Spring Boot)
 - In-memory H2 database for development
 - User Roles and Authentication using JWT
-- (Planned) Responsive Angular frontend
+- **Neobrutalism Design System** with high-contrast UI
+- Responsive Angular frontend with Sora typography
+
+## Interface Preview (Neobrutalism)
+
+![Login Mockup](file:///C:/Users/J/.gemini/antigravity/brain/f0e9c861-42e6-4f39-8027-20c4865a0c8c/neobrutalism_login_mockup_png_1772673663257.png)
+
+*Consistent high-contrast login experience.*
+
+![Dashboard Mockup](file:///C:/Users/J/.gemini/antigravity/brain/f0e9c861-42e6-4f39-8027-20c4865a0c8c/neobrutalism_dashboard_mockup_png_1772673623860.png)
+
+*Professional dashboard with service grid and reservation management.*
 
 ## Requirements
 - Java 17 or higher
 - Maven
-- Node.js & Angular CLI (for frontend, planned)
+- Node.js & Angular CLI
 
 ## Getting Started
 
@@ -33,12 +44,12 @@ A full-stack application for appointment booking and service management.
    ```
    The API will be available at `http://localhost:8080`.
 
-### Frontend (Planned)
+### Frontend
 1. Navigate to the frontend folder:
    ```
    cd frontend
    ```
-2. Install dependencies and run (after implementation):
+2. Install dependencies and run:
    ```
    npm install
    ng serve
