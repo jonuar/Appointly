@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReservationService, ServiceItem, Reservation } from '../../services/reservation.service'
 import { AuthService } from '../../services/auth.service';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { NotificationService } from '../../services/notification.service';
 
@@ -19,7 +19,7 @@ ChartJS.register(...registerables);
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, BaseChartDirective],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, BaseChartDirective],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit {
   currentUser: any;
   showModal = false;
   showServiceModal = false;
+  editingServiceId: number | null = null;
   showAvailabilityModal = false;
 
   selectedService: ServiceItem | null = null;
@@ -128,6 +129,29 @@ export class DashboardComponent implements OnInit {
     };
   }
 
+  editingNotesFor: number | null = null;
+  editNotesValue: string = '';
+
+  startEditNotes(res: Reservation): void {
+    this.editingNotesFor = res.id!;
+    this.editNotesValue = res.notes || '';
+  }
+
+  cancelEditNotes(): void {
+    this.editingNotesFor = null;
+    this.editNotesValue = '';
+  }
+
+  async saveNotes(id: number): Promise<void> {
+    try {
+      await firstValueFrom(this.reservationService.updateReservationNotes(id, this.editNotesValue));
+      this.notificationService.success('Notas actualizadas.');
+      this.editingNotesFor = null;
+      if (this.isAdmin) await this.loadAdminData();
+      else await this.loadReservations();
+    } catch (error) { }
+  }
+
   async updateStatus(id: number, status: string): Promise<void> {
     try {
       await firstValueFrom(this.reservationService.updateReservationStatus(id, status));
@@ -145,18 +169,47 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  async onAddService(): Promise<void> {
+  async onSaveService(): Promise<void> {
     if (this.serviceForm.invalid) return;
-    await firstValueFrom(this.reservationService.addService(this.serviceForm.value));
-    this.notificationService.success('Servicio añadido.');
-    this.showServiceModal = false;
-    this.serviceForm.reset();
+
+    if (this.editingServiceId) {
+      await firstValueFrom(this.reservationService.updateService(this.editingServiceId, this.serviceForm.value));
+      this.notificationService.success('Servicio actualizado.');
+    } else {
+      await firstValueFrom(this.reservationService.addService(this.serviceForm.value));
+      this.notificationService.success('Servicio añadido.');
+    }
+    this.closeServiceModal();
     this.loadAdminData();
+  }
+
+  openAddServiceModal(): void {
+    this.editingServiceId = null;
+    this.serviceForm.reset({ price: 0, durationInMinutes: 30 });
+    this.showServiceModal = true;
+  }
+
+  openEditServiceModal(service: ServiceItem): void {
+    this.editingServiceId = service.id!;
+    this.serviceForm.patchValue({
+      name: service.name,
+      description: service.description,
+      price: service.price,
+      durationInMinutes: service.durationInMinutes
+    });
+    this.showServiceModal = true;
+  }
+
+  closeServiceModal(): void {
+    this.showServiceModal = false;
+    this.editingServiceId = null;
+    this.serviceForm.reset();
   }
 
   async onDeleteService(id: number): Promise<void> {
     if (confirm('¿Eliminar este servicio?')) {
       await firstValueFrom(this.reservationService.deleteService(id));
+      this.notificationService.success('Servicio eliminado.');
       this.loadAdminData();
     }
   }

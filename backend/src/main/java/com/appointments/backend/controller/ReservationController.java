@@ -99,6 +99,26 @@ public class ReservationController {
         }
     }
 
+    @PatchMapping("/{id}/notes")
+    public ResponseEntity<?> updateNotes(@PathVariable Long id, @RequestBody Map<String, String> body, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Reservation reservation = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Reservation not found"));
+            
+        if (!reservation.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
+            return ResponseEntity.status(403).body(Map.of("message", "No tienes permiso para editar esta reserva"));
+        }
+        
+        if (reservation.getStatus() != ReservationStatus.PENDING && user.getRole() != Role.ADMIN) {
+            return ResponseEntity.badRequest().body(Map.of("message", "No se pueden editar notas de reservas confirmadas o canceladas"));
+        }
+            
+        String notes = body.get("notes");
+        reservation.setNotes(notes);
+        Reservation updated = repository.save(reservation);
+        return ResponseEntity.ok(updated);
+    }
+
     @GetMapping("/user/{userId}")
     public List<Reservation> getByUser(@PathVariable Long userId) {
         return repository.findByUser_Id(userId);

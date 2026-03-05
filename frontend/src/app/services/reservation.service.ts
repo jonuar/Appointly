@@ -57,6 +57,10 @@ export class ReservationService {
         return this.http.patch<Reservation>(`${this.apiUrl}/reservations/${id}/status`, { status });
     }
 
+    updateReservationNotes(id: number, notes: string): Observable<Reservation> {
+        return this.http.patch<Reservation>(`${this.apiUrl}/reservations/${id}/notes`, { notes });
+    }
+
     // Admin Endpoints
     getAllReservations(): Observable<Reservation[]> {
         return this.http.get<Reservation[]>(`${this.apiUrl}/reservations`);
@@ -72,6 +76,10 @@ export class ReservationService {
 
     addService(service: ServiceItem): Observable<ServiceItem> {
         return this.http.post<ServiceItem>(`${this.apiUrl}/services`, service);
+    }
+
+    updateService(id: number, service: ServiceItem): Observable<ServiceItem> {
+        return this.http.put<ServiceItem>(`${this.apiUrl}/services/${id}`, service);
     }
 
     deleteService(id: number): Observable<void> {

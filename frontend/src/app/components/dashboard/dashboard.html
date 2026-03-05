@@ -59,6 +59,7 @@
                             <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
                             <span class="res-service"><strong>{{ res.user.name }}</strong> - {{ res.service.name
                                 }}</span>
+                            <p class="res-notes" *ngIf="res.notes"><em>Notas:</em> {{ res.notes }}</p>
                         </div>
                         <div class="res-actions">
                             <span class="res-status" [class]="res.status?.toLowerCase()">{{ res.status }}</span>
@@ -73,7 +74,7 @@
             <!-- Admin Services Management -->
             <section class="admin-grid-section" *ngIf="activeTab === 'services'">
                 <div class="grid-header">
-                    <button class="btn-primary-neo" (click)="showServiceModal = true">+ Nuevo Servicio</button>
+                    <button class="btn-primary-neo" (click)="openAddServiceModal()">+ Nuevo Servicio</button>
                 </div>
                 <div class="services-grid">
                     <div class="service-card" *ngFor="let service of services">
@@ -81,7 +82,10 @@
                             <h3>{{ service.name }}</h3>
                             <p>${{ service.price }} - {{ service.durationInMinutes }} min</p>
                         </div>
-                        <button class="btn-cancel" (click)="onDeleteService(service.id)">Eliminar</button>
+                        <div class="res-actions">
+                            <button class="btn-confirm" (click)="openEditServiceModal(service)">Editar</button>
+                            <button class="btn-danger-neo" (click)="onDeleteService(service.id)">Eliminar</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -94,7 +98,7 @@
                             <span class="res-date">{{ user.name }}</span>
                             <span class="res-service">{{ user.email }} ({{ user.role }})</span>
                         </div>
-                        <button class="btn-cancel" *ngIf="user.role !== 'ADMIN'"
+                        <button class="btn-danger-neo" *ngIf="user.role !== 'ADMIN'"
                             (click)="deleteUser(user.id)">Expulsar</button>
                     </div>
                 </div>
@@ -166,6 +170,22 @@
                         <div class="res-body">
                             <span class="res-date">{{ res.reservationDateTime | date:'medium' }}</span>
                             <span class="res-service">{{ res.service.name }}</span>
+
+                            <!-- Notes Display & Edit -->
+                            <div class="res-notes-container">
+                                <ng-container *ngIf="editingNotesFor !== res.id">
+                                    <p class="res-notes" *ngIf="res.notes"><em>Notas:</em> {{ res.notes }}</p>
+                                    <button *ngIf="res.status === 'PENDING'" class="btn-edit-notes"
+                                        (click)="startEditNotes(res)">Editar Notas</button>
+                                </ng-container>
+                                <div class="edit-notes-form" *ngIf="editingNotesFor === res.id">
+                                    <textarea [(ngModel)]="editNotesValue" rows="2" class="neo-input"></textarea>
+                                    <div class="edit-notes-actions">
+                                        <button class="btn-confirm" (click)="saveNotes(res.id!)">Guardar</button>
+                                        <button class="btn-cancel-text" (click)="cancelEditNotes()">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="res-actions">
                             <span class="res-status" [class]="res.status?.toLowerCase()">
@@ -199,20 +219,33 @@
 
     </main>
 
-    <!-- Admin: Add Service Modal -->
-    <div class="modal-backdrop" *ngIf="showServiceModal" (click)="showServiceModal = false">
+    <!-- Admin: Add/Edit Service Modal -->
+    <div class="modal-backdrop" *ngIf="showServiceModal" (click)="closeServiceModal()">
         <div class="modal-card" (click)="$event.stopPropagation()">
             <div class="modal-header">
-                <h3>Nuevo Servicio</h3>
-                <button class="btn-close" (click)="showServiceModal = false">&times;</button>
+                <h3>{{ editingServiceId ? 'Editar Servicio' : 'Nuevo Servicio' }}</h3>
+                <button class="btn-close" (click)="closeServiceModal()">&times;</button>
             </div>
-            <form [formGroup]="serviceForm" (ngSubmit)="onAddService()" class="modal-form">
-                <input type="text" formControlName="name" placeholder="Nombre del servicio">
-                <textarea formControlName="description" placeholder="Descripción"></textarea>
-                <input type="number" formControlName="price" placeholder="Precio ($)">
-                <input type="number" formControlName="durationInMinutes" placeholder="Duración (min)">
+            <form [formGroup]="serviceForm" (ngSubmit)="onSaveService()" class="neo-form">
+                <div class="form-group">
+                    <label>Nombre del Servicio</label>
+                    <input type="text" formControlName="name" class="neo-input" placeholder="Ej: Corte de Cabello">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea formControlName="description" class="neo-input"
+                        placeholder="Breve descripción del servicio"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Precio ($)</label>
+                    <input type="number" formControlName="price" class="neo-input" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Duración (minutos)</label>
+                    <input type="number" formControlName="durationInMinutes" class="neo-input" placeholder="30">
+                </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn-primary">Guardar Servicio</button>
+                    <button type="submit" class="btn-primary-neo">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -225,12 +258,21 @@
                 <h3>Añadir Disponibilidad</h3>
                 <button class="btn-close" (click)="showAvailabilityModal = false">&times;</button>
             </div>
-            <form [formGroup]="availabilityForm" (ngSubmit)="onAddAvailable()" class="modal-form">
-                <input type="date" formControlName="availableDate">
-                <input type="time" formControlName="startTime">
-                <input type="time" formControlName="endTime">
+            <form [formGroup]="availabilityForm" (ngSubmit)="onAddAvailable()" class="neo-form">
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" formControlName="availableDate" class="neo-input">
+                </div>
+                <div class="form-group">
+                    <label>Hora de Inicio</label>
+                    <input type="time" formControlName="startTime" class="neo-input">
+                </div>
+                <div class="form-group">
+                    <label>Hora de Fin</label>
+                    <input type="time" formControlName="endTime" class="neo-input">
+                </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn-primary">Añadir Horario</button>
+                    <button type="submit" class="btn-primary-neo">Añadir Horario</button>
                 </div>
             </form>
         </div>
@@ -244,22 +286,22 @@
                 <button class="btn-close" (click)="closeModal()">&times;</button>
             </div>
 
-            <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()" class="modal-form">
+            <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()" class="neo-form">
                 <div class="form-group">
                     <label>Fecha y Hora</label>
-                    <input type="datetime-local" formControlName="reservationDateTime"
+                    <input type="datetime-local" formControlName="reservationDateTime" class="neo-input"
                         [class.input-error]="reservationForm.get('reservationDateTime')?.invalid && reservationForm.get('reservationDateTime')?.touched">
                 </div>
 
                 <div class="form-group">
                     <label>Notas adicionales</label>
-                    <textarea formControlName="notes" rows="3"
+                    <textarea formControlName="notes" rows="3" class="neo-input"
                         placeholder="Ej: Alguna preferencia especial..."></textarea>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary" [disabled]="reservationForm.invalid">
+                    <button type="submit" class="btn-primary-neo" [disabled]="reservationForm.invalid">
                         Confirmar Reserva
                     </button>
                 </div>
