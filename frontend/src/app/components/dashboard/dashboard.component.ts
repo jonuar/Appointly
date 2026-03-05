@@ -94,6 +94,7 @@ export class DashboardComponent implements OnInit {
 
     this.availabilityForm = this.fb.group({
       availableDate: [new Date().toISOString().split('T')[0], Validators.required],
+      endDate: [''],
       startTime: ['09:00', Validators.required],
       endTime: ['10:00', Validators.required]
     });
@@ -215,10 +216,42 @@ export class DashboardComponent implements OnInit {
   }
 
   async onAddAvailable(): Promise<void> {
-    await firstValueFrom(this.reservationService.addAvailability(this.availabilityForm.value));
-    this.notificationService.success('Horario añadido.');
-    this.showAvailabilityModal = false;
-    this.loadAdminData();
+    if (this.availabilityForm.invalid) return;
+
+    const formVals = this.availabilityForm.value;
+    const startDate = new Date(formVals.availableDate);
+    const endDate = formVals.endDate ? new Date(formVals.endDate) : startDate;
+
+    // Ensure endDate is not before startDate
+    if (endDate < startDate) {
+      this.notificationService.error('La fecha de fin no puede ser anterior a la de inicio.');
+      return;
+    }
+
+    const requests = [];
+    let currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+      const availObj = {
+        availableDate: currentDate.toISOString().split('T')[0],
+        startTime: formVals.startTime,
+        endTime: formVals.endTime
+      };
+      requests.push(firstValueFrom(this.reservationService.addAvailability(availObj)));
+
+      // Add 1 day
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    try {
+      await Promise.all(requests);
+      this.notificationService.success(`Horario(s) añadido(s) exitosamente.`);
+      this.showAvailabilityModal = false;
+      this.availabilityForm.reset({ availableDate: new Date().toISOString().split('T')[0], startTime: '09:00', endTime: '10:00' });
+      this.loadAdminData();
+    } catch (e) {
+      this.notificationService.error('Ocurrió un error al guardar las fechas.');
+    }
   }
 
   async onDeleteAvailable(id: number): Promise<void> {

@@ -260,8 +260,13 @@
             </div>
             <form [formGroup]="availabilityForm" (ngSubmit)="onAddAvailable()" class="neo-form">
                 <div class="form-group">
-                    <label>Fecha</label>
+                    <label>Fecha Inicial</label>
                     <input type="date" formControlName="availableDate" class="neo-input">
+                </div>
+                <div class="form-group">
+                    <label>Fecha Final (Opcional)</label>
+                    <input type="date" formControlName="endDate" class="neo-input"
+                        placeholder="Para repetir varios días">
                 </div>
                 <div class="form-group">
                     <label>Hora de Inicio</label>
