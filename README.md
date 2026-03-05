@@ -65,12 +65,12 @@ A full-stack application for appointment booking and service management.
 
 ## Main API Endpoints
 
-- `POST /api/auth/register` — Registrar nuevo usuario
-- `POST /api/auth/login` — Iniciar sesión y obtener JWT
-- `GET /api/services` — Listar servicios (Público)
-- `GET /api/reservations/my` — Ver mis reservas (Requiere JWT)
-- `POST /api/reservations` — Crear reserva (Requiere JWT)
-- `DELETE /api/reservations/{id}` — Cancelar reserva (Requiere JWT)
+- `POST /api/auth/register` — Register a new user
+- `POST /api/auth/login` — Login and get JWT
+- `GET /api/services` — List services (Public)
+- `GET /api/reservations/my` — View my reservations (Requires JWT)
+- `POST /api/reservations` — Create reservation (Requires JWT)
+- `DELETE /api/reservations/{id}` — Cancel reservation (Requires JWT)
 
 ## Example Reservation JSON
 ```json
@@ -82,15 +82,14 @@ A full-stack application for appointment booking and service management.
 ```
 
 ## Default Credentials (H2 Development)
-Como la base de datos es en memoria, se han pre-cargado los siguientes usuarios para pruebas rápidas:
+As the database is in-memory, the following users have been pre-loaded for quick testing:
 
-| Rol | Email | Password |
+| Role | Email | Password |
 | :--- | :--- | :--- |
 | **User** | `test@example.com` | `password123` |
 | **Admin** | `admin@appointly.com` | `admin123` |
 
 ## Development Notes
-- El backend usa una base de datos H2 en memoria que se reinicia con cada ejecución.
-- La seguridad está habilitada mediante JWT. Casi todos los endpoints de `/api/reservations/**` requieren el token en el header `Authorization: Bearer <token>`.
-- El frontend está desarrollado en Angular y ya integra el interceptor para el manejo de sesiones.
-
+- The backend uses an in-memory H2 database that resets on every execution.
+- Security is enabled via JWT. Almost all `/api/reservations/**` endpoints require the token in the `Authorization: Bearer <token>` header.
+- The frontend is developed in Angular and already integrates an interceptor for session management.

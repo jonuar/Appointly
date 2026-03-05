@@ -72,6 +72,7 @@ export class DashboardComponent implements OnInit {
     } else {
       this.loadServices();
       this.loadReservations();
+      this.loadAvailability();
     }
 
     this.initForms();
@@ -314,6 +315,16 @@ export class DashboardComponent implements OnInit {
     this.pastReservations = all.filter(r => {
       const date = new Date(r.reservationDateTime);
       return date < now || r.status === 'CANCELLED';
+    });
+  }
+
+  async loadAvailability(): Promise<void> {
+    this.availability = await firstValueFrom(this.reservationService.getAvailability());
+    // Sor by date and time
+    this.availability.sort((a, b) => {
+      const dateA = new Date(`${a.availableDate}T${a.startTime}`).getTime();
+      const dateB = new Date(`${b.availableDate}T${b.startTime}`).getTime();
+      return dateA - dateB;
     });
   }
 
