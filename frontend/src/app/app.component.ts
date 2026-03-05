@@ -12,12 +12,7 @@ import { NotificationComponent } from './components/ui/notification/notification
     <app-notification></app-notification>
     
     <div class="reservation-system">
-      <header class="app-header">
-        <h1>Sistema de Reservas</h1>
-        <nav>
-          <!-- Navegación irá aquí después -->
-        </nav>
-      </header>
+      
       <main class="app-content">
         <router-outlet></router-outlet>
       </main>

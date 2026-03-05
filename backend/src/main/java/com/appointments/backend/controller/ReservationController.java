@@ -64,7 +64,7 @@ public class ReservationController {
             .orElseThrow(() -> new RuntimeException("Reservation not found"));
             
         if (!reservation.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            return ResponseEntity.status(403).body("No tienes permiso para cancelar esta reserva");
+            return ResponseEntity.status(403).body(Map.of("message", "No tienes permiso para cancelar esta reserva"));
         }
         
         repository.delete(reservation);
@@ -79,12 +79,12 @@ public class ReservationController {
             
         // Security check: Only owner or Admin
         if (!reservation.getUser().getId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            return ResponseEntity.status(403).body("No tienes permiso para modificar esta reserva");
+            return ResponseEntity.status(403).body(Map.of("message", "No tienes permiso para modificar esta reserva"));
         }
 
         String statusStr = body.get("status");
         if (statusStr == null) {
-            return ResponseEntity.badRequest().body("El campo 'status' es obligatorio");
+            return ResponseEntity.badRequest().body(Map.of("message", "El campo 'status' es obligatorio"));
         }
 
         try {
@@ -93,7 +93,7 @@ public class ReservationController {
             Reservation updated = repository.save(reservation);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Estado no válido");
+            return ResponseEntity.badRequest().body(Map.of("message", "Estado no válido"));
         }
     }
 
